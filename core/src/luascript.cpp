@@ -8639,7 +8639,7 @@ int LuaScriptInterface::luaPlayerAddSkillTries(lua_State* L)
 	if (player) {
 		skills_t skillType = getNumber<skills_t>(L, 2);
 		uint64_t tries = getNumber<uint64_t>(L, 3);
-		player->addSkillAdvance(skillType, tries);
+		//player->addSkillAdvance(skillType, tries); @Skill system
 		pushBoolean(L, true);
 	} else {
 		lua_pushnil(L);
