@@ -1,0 +1,33 @@
+{
+  "name": "otclient",
+  "version-string": "1.0.0",
+  "dependencies": [
+    "asio",
+    "libogg",
+    "libvorbis",
+    "nlohmann-json",
+    "openal-soft",
+    "openssl",
+    "physfs",
+    "protobuf",
+    "zlib",
+    "liblzma",
+    "parallel-hashmap",
+    "stduuid",
+    "discord-rpc",
+    "pugixml",
+    {
+      "name": "luajit",
+      "platform": "!android"
+    },
+    {
+      "name": "opengl",
+      "platform": "windows | linux"
+    },
+    {
+      "name": "glew",
+      "platform": "windows | osx"
+    }
+  ],
+  "builtin-baseline":"6ba86f3584f98aa16944408341f7c8e363c3356b"
+}

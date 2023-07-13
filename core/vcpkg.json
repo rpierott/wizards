@@ -1,0 +1,28 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "dependencies": [
+    "boost-asio",
+    "boost-iostreams",
+    "boost-lockfree",
+    "boost-system",
+    "boost-variant",
+    "boost-filesystem",
+    "cryptopp",
+    "fmt",
+    "libmariadb",
+    "lua",
+    "pugixml"
+  ],
+  "features": {
+    "luajit": {
+      "description": "Use LuaJIT instead of Lua",
+      "dependencies": [
+        "luajit"
+      ]
+    }
+  },
+  "overrides": [
+    { "name": "fmt", "version": "9.1.0" }
+],
+"builtin-baseline": "501db0f17ef6df184fcdbfbe0f87cde2313b6ab1"
+}
