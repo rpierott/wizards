@@ -31,7 +31,7 @@ MuteCountMap Player::muteCountMap;
 
 uint32_t Player::playerAutoID = 0x10000000;
 
-Player::Player(ProtocolGame_ptr p) : Creature(), lastPing(OTSYS_TIME()), lastPong(lastPing), inbox(new Inbox(ITEM_INBOX)), storeInbox(new StoreInbox(ITEM_STORE_INBOX)), client(std::move(p)), statPoints(0) //@Skill points system
+Player::Player(ProtocolGame_ptr p) : Creature(), lastPing(OTSYS_TIME()), lastPong(lastPing), inbox(new Inbox(ITEM_INBOX)), storeInbox(new StoreInbox(ITEM_STORE_INBOX)), client(std::move(p))
 {
 	inbox->incrementReferenceCounter();
 	storeInbox->setParent(this);
@@ -520,7 +520,7 @@ void Player::updateInventoryWeight()
 	}
 }
 
-// void Player::addSkillAdvance(skills_t skill, uint64_t count) @Skill points system
+// void Player::addSkillAdvance(skills_t skill, uint64_t count) //@Skill points system
 // {
 // uint64_t currReqTries = vocation->getReqSkillTries(skill, skills[skill].level);
 // uint64_t nextReqTries = vocation->getReqSkillTries(skill, skills[skill].level + 1);
@@ -535,43 +535,44 @@ void Player::updateInventoryWeight()
 // }
 
 // bool sendUpdateSkills = false;
-// while ((skills[skill].tries + count) >= nextReqTries) {
-// 	count -= nextReqTries - skills[skill].tries;
-// 	skills[skill].level++;
-// 	skills[skill].tries = 0;
-// 	skills[skill].percent = 0;
+// // while ((skills[skill].tries + count) >= nextReqTries) {
+// // count -= nextReqTries - skills[skill].tries;
+// skills[skill].level++;
+// // skills[skill].tries = 0;
+// skills[skill].percent = 0;
 
-// 	sendTextMessage(MESSAGE_EVENT_ADVANCE, fmt::format("You advanced to {:s} level {:d}.", getSkillName(skill), skills[skill].level));
+// sendTextMessage(MESSAGE_EVENT_ADVANCE, fmt::format("You advanced to {:s} level {:d}.", getSkillName(skill), skills[skill].level));
 
-// 	g_creatureEvents->playerAdvance(this, skill, (skills[skill].level - 1), skills[skill].level);
+// g_creatureEvents->playerAdvance(this, skill, (skills[skill].level - 1), skills[skill].level);
 
-// 	sendUpdateSkills = true;
-// 	currReqTries = nextReqTries;
-// 	nextReqTries = vocation->getReqSkillTries(skill, skills[skill].level + 1);
-// 	if (currReqTries >= nextReqTries) {
-// 		count = 0;
-// 		break;
-// 	}
-// }
+// sendUpdateSkills = true;
+// // currReqTries = nextReqTries;
+// // nextReqTries = vocation->getReqSkillTries(skill, skills[skill].level + 1);
+// // if (currReqTries >= nextReqTries) {
+// // count = 0;
+// // break;
+// // }
+// // }
 
-// skills[skill].tries += count;
+// // skills[skill].tries += count;
 
-// uint32_t newPercent;
-// if (nextReqTries > currReqTries) {
-// 	newPercent = Player::getPercentLevel(skills[skill].tries, nextReqTries);
-// } else {
-// 	newPercent = 0;
-// }
+// // uint32_t newPercent;
+// // if (nextReqTries > currReqTries) {
+// // 	newPercent = Player::getPercentLevel(skills[skill].tries, nextReqTries);
+// // } else {
+// // 	newPercent = 0;
+// // }
 
-// if (skills[skill].percent != newPercent) {
-// 	skills[skill].percent = newPercent;
-// 	sendUpdateSkills = true;
-// }
+// // if (skills[skill].percent != newPercent) {
+// // 	skills[skill].percent = newPercent;
+// // 	sendUpdateSkills = true;
+// // }
 
-// if (sendUpdateSkills) {
+// if (sendUpdateSkills)
+// {
 // 	sendSkills();
 // }
-// }
+// } //@Skill points system
 
 void Player::removeSkillTries(skills_t skill, uint64_t count, bool notify /* = false*/)
 {
@@ -1084,6 +1085,17 @@ void Player::setWriteItem(Item *item, uint16_t maxWriteLen /*= 0*/)
 		this->maxWriteLen = 0;
 	}
 }
+
+void Player::setSkillPoints(int skillPoints)
+{
+	this->skillPoints = skillPoints; // 'this' is a pointer to the current instance of the Player class
+									 // std::cout << skillPoints;
+} //@Skill points system
+
+int Player::getSkillPoints() const
+{
+	return this->skillPoints;
+} //@Skill points system
 
 House *Player::getEditHouse(uint32_t &windowTextId, uint32_t &listId)
 {
@@ -2025,6 +2037,10 @@ void Player::addExperience(Creature *source, uint64_t exp, bool sendText /* = fa
 	while (experience >= nextLevelExp)
 	{
 		++level;
+
+		// sendTextMessage(MESSAGE_EVENT_ADVANCE, fmt::format("You bilu ")); //@msgm
+		setSkillPoints(getSkillPoints() + 1); //@Skill point system
+
 		healthMax += vocation->getHPGain();
 		health += vocation->getHPGain();
 		manaMax += vocation->getManaGain();
@@ -2033,6 +2049,9 @@ void Player::addExperience(Creature *source, uint64_t exp, bool sendText /* = fa
 
 		currLevelExp = nextLevelExp;
 		nextLevelExp = Player::getExpForLevel(level + 1);
+
+		// @Increase skill points
+
 		if (currLevelExp >= nextLevelExp)
 		{
 			// player has reached max level
@@ -4384,11 +4403,6 @@ void Player::onGainExperience(uint64_t gainExp, Creature *target)
 	{
 		return;
 	}
-
-	if (newLevel > oldLevel)
-	{
-		addStatPoints(newLevel - oldLevel);
-	} //@Skill poits system
 
 	if (target && !target->getPlayer() && party && party->isSharedExperienceActive() && party->isSharedExperienceEnabled())
 	{

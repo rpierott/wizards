@@ -1117,11 +1117,11 @@ void LuaScriptInterface::registerFunctions()
 	// doPlayerAddItem(uid, itemid, <optional: default: 1> count/subtype)
 	// doPlayerAddItem(cid, itemid, <optional: default: 1> count, <optional: default: 1> canDropOnMap, <optional: default: 1>subtype)
 
-	// Skill Points System @
-	lua_register(m_luaState, "Player.addSkill", LuaScriptInterface::luaPlayerAddSkill); //@Skill points system
-
 	// Returns uid of the created item
 	lua_register(luaState, "doPlayerAddItem", LuaScriptInterface::luaDoPlayerAddItem);
+
+	lua_register(luaState, "Player.getSkillPoints", LuaScriptInterface::luaPlayerGetSkillPoints); //@Skill points system
+	lua_register(luaState, "Player.addSkillPoints", LuaScriptInterface::luaPlayerAddSkillPoints); //@Skill points system
 
 	// isValidUID(uid)
 	lua_register(luaState, "isValidUID", LuaScriptInterface::luaIsValidUID);
@@ -2521,8 +2521,6 @@ void LuaScriptInterface::registerFunctions()
 	registerMethod("Player", "getSkillTries", LuaScriptInterface::luaPlayerGetSkillTries);
 	registerMethod("Player", "addSkillTries", LuaScriptInterface::luaPlayerAddSkillTries);
 
-	// registerMethod("Player", "addSkill", LuaScriptInterface::luaPlayerAddSkill); //@Skill points system
-
 	registerMethod("Player", "removeSkillTries", LuaScriptInterface::luaPlayerRemoveSkillTries);
 	registerMethod("Player", "getSpecialSkill", LuaScriptInterface::luaPlayerGetSpecialSkill);
 	registerMethod("Player", "addSpecialSkill", LuaScriptInterface::luaPlayerAddSpecialSkill);
@@ -3712,6 +3710,38 @@ int LuaScriptInterface::luaIsDepot(lua_State *L)
 	pushBoolean(L, container && container->getDepotLocker());
 	return 1;
 }
+
+int LuaScriptInterface::luaPlayerGetSkillPoints(lua_State *L)
+{
+	// get player object
+	Player *player = getUserdata<Player>(L, 1);
+	if (player)
+	{
+		// push the player's skill points onto the stack
+		lua_pushnumber(L, player->getSkillPoints());
+		// tell Lua that we're returning 1 value
+		return 1;
+	}
+	else
+	{
+		lua_pushnil(L);
+		return 1;
+	}
+} //@Skill points system
+
+int LuaScriptInterface::luaPlayerAddSkillPoints(lua_State *L)
+{
+	// get player object and the amount of skill points to add
+	Player *player = getUserdata<Player>(L, 1);
+	int points = getNumber<int>(L, 2);
+	if (player)
+	{
+		// add the skill points to the player
+		player->setSkillPoints(player->getSkillPoints() + points);
+	}
+	// tell Lua we're not returning any values
+	return 0;
+} //@Skill points system
 
 int LuaScriptInterface::luaIsMoveable(lua_State *L)
 {
@@ -9776,27 +9806,6 @@ int LuaScriptInterface::luaPlayerGetSkillTries(lua_State *L)
 	return 1;
 }
 
-int LuaScriptInterface::luaPlayerAddSkill(lua_State *L)
-{
-	// get player and skill type from Lua arguments
-	uint32_t playerId = popNumber(L);
-	uint8_t skillType = popNumber(L);
-
-	Player *player = g_game.getPlayerByID(playerId);
-	if (player && player->getStatPoints() > 0)
-	{
-		player->removeStatPoints(1);
-		player->addSkillAdvance((skills_t)skillType, 1);
-		pushBoolean(L, true);
-	}
-	else
-	{
-		pushBoolean(L, false);
-	}
-
-	return 1;
-} //@Skill points system
-
 int LuaScriptInterface::luaPlayerAddSkillTries(lua_State *L)
 {
 	// player:addSkillTries(skillType, tries)
@@ -9805,7 +9814,6 @@ int LuaScriptInterface::luaPlayerAddSkillTries(lua_State *L)
 	{
 		skills_t skillType = getNumber<skills_t>(L, 2);
 		uint64_t tries = getNumber<uint64_t>(L, 3);
-		// player->addSkillAdvance(skillType, tries); @Skill system
 		pushBoolean(L, true);
 	}
 	else

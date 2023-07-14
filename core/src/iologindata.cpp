@@ -222,13 +222,13 @@ bool IOLoginData::preloadPlayer(Player *player, const std::string &name)
 bool IOLoginData::loadPlayerById(Player *player, uint32_t id)
 {
 	Database &db = Database::getInstance();
-	return loadPlayer(player, db.storeQuery(fmt::format("SELECT `id`, `name`, `account_id`, `group_id`, `sex`, `vocation`, `experience`, `level`, `maglevel`, `health`, `healthmax`, `blessings`, `mana`, `manamax`, `manaspent`, `soul`, `lookbody`, `lookfeet`, `lookhead`, `looklegs`, `looktype`, `lookaddons`, `posx`, `posy`, `posz`, `cap`, `lastlogin`, `lastlogout`, `lastip`, `conditions`, `skulltime`, `skull`, `town_id`, `balance`, `offlinetraining_time`, `offlinetraining_skill`, `stamina`, `skill_fist`, `skill_fist_tries`, `skill_club`, `skill_club_tries`, `skill_sword`, `skill_sword_tries`, `skill_axe`, `skill_axe_tries`, `skill_dist`, `skill_dist_tries`, `skill_shielding`, `skill_shielding_tries`, `skill_fishing`, `skill_fishing_tries`, `stat_points`,`direction` FROM `players` WHERE `id` = {:d}", id))); //@ skill system
+	return loadPlayer(player, db.storeQuery(fmt::format("SELECT `id`, `name`, `account_id`, `group_id`, `sex`, `vocation`, `experience`, `level`, `maglevel`, `health`, `healthmax`, `blessings`, `mana`, `manamax`, `manaspent`, `soul`, `lookbody`, `lookfeet`, `lookhead`, `looklegs`, `looktype`, `lookaddons`, `posx`, `posy`, `posz`, `cap`, `lastlogin`, `lastlogout`, `lastip`, `conditions`, `skulltime`, `skull`, `town_id`, `balance`, `offlinetraining_time`, `offlinetraining_skill`, `stamina`, `skill_fist`, `skill_fist_tries`, `skill_club`, `skill_club_tries`, `skill_sword`, `skill_sword_tries`, `skill_axe`, `skill_axe_tries`, `skill_dist`, `skill_dist_tries`, `skill_shielding`, `skill_shielding_tries`, `skill_fishing`, `skill_fishing_tries`,`direction` FROM `players` WHERE `id` = {:d}", id)));
 }
 
 bool IOLoginData::loadPlayerByName(Player *player, const std::string &name)
 {
 	Database &db = Database::getInstance();
-	return loadPlayer(player, db.storeQuery(fmt::format("SELECT `id`, `name`, `account_id`, `group_id`, `sex`, `vocation`, `experience`, `level`, `maglevel`, `health`, `healthmax`, `blessings`, `mana`, `manamax`, `manaspent`, `soul`, `lookbody`, `lookfeet`, `lookhead`, `looklegs`, `looktype`, `lookaddons`, `posx`, `posy`, `posz`, `cap`, `lastlogin`, `lastlogout`, `lastip`, `conditions`, `skulltime`, `skull`, `town_id`, `balance`, `offlinetraining_time`, `offlinetraining_skill`, `stamina`, `skill_fist`, `skill_fist_tries`, `skill_club`, `skill_club_tries`, `skill_sword`, `skill_sword_tries`, `skill_axe`, `skill_axe_tries`, `skill_dist`, `skill_dist_tries`, `skill_shielding`, `skill_shielding_tries`, `skill_fishing`, `skill_fishing_tries`, `stat_points`, `direction` FROM `players` WHERE `name` = {:s}", db.escapeString(name)))); //@skill system
+	return loadPlayer(player, db.storeQuery(fmt::format("SELECT `id`, `name`, `account_id`, `group_id`, `sex`, `vocation`, `experience`, `level`, `maglevel`, `health`, `healthmax`, `blessings`, `mana`, `manamax`, `manaspent`, `soul`, `lookbody`, `lookfeet`, `lookhead`, `looklegs`, `looktype`, `lookaddons`, `posx`, `posy`, `posz`, `cap`, `lastlogin`, `lastlogout`, `lastip`, `conditions`, `skulltime`, `skull`, `town_id`, `balance`, `offlinetraining_time`, `offlinetraining_skill`, `stamina`, `skill_fist`, `skill_fist_tries`, `skill_club`, `skill_club_tries`, `skill_sword`, `skill_sword_tries`, `skill_axe`, `skill_axe_tries`, `skill_dist`, `skill_dist_tries`, `skill_shielding`, `skill_shielding_tries`, `skill_fishing`, `skill_fishing_tries`, `direction` FROM `players` WHERE `name` = {:s}", db.escapeString(name))));
 }
 
 static GuildWarVector getWarList(uint32_t guildId)
@@ -307,6 +307,16 @@ bool IOLoginData::loadPlayer(Player *player, DBResult_ptr result)
 	{
 		player->levelPercent = 0;
 	}
+
+	std::ostringstream query3;															 //@Skill system points
+	query3 << "SELECT `skill_points` FROM `players` WHERE `id` = " << player->getGUID(); //@Skill system points
+	std::cout << query3.str() << "Aui";
+	std::cout << query3.str();
+	DBResult_ptr result3 = db.storeQuery(query3.str()); //@Skill system points
+	if (result3)
+	{
+		player->setSkillPoints(result3->getNumber<int32_t>("skill_points"));
+	} //@Skill system points
 
 	player->soul = result->getNumber<uint16_t>("soul");
 	player->capacity = result->getNumber<uint32_t>("cap") * 100;
@@ -410,7 +420,7 @@ bool IOLoginData::loadPlayer(Player *player, DBResult_ptr result)
 
 	player->staminaMinutes = result->getNumber<uint16_t>("stamina");
 
-	static const std::string skillNames[] = {"skill_fist", "skill_club", "skill_sword", "skill_axe", "skill_dist", "skill_shielding", "skill_fishing", "stat_points"}; //@Skill system
+	static const std::string skillNames[] = {"skill_fist", "skill_club", "skill_sword", "skill_axe", "skill_dist", "skill_shielding", "skill_fishing"};
 	static const std::string skillNameTries[] = {"skill_fist_tries", "skill_club_tries", "skill_sword_tries", "skill_axe_tries", "skill_dist_tries", "skill_shielding_tries", "skill_fishing_tries"};
 	static constexpr size_t size = sizeof(skillNames) / sizeof(std::string);
 	for (uint8_t i = 0; i < size; ++i)
@@ -721,6 +731,8 @@ bool IOLoginData::savePlayer(Player *player)
 
 	Database &db = Database::getInstance();
 
+	// std::ostringstream query; //@Skill points system
+
 	DBResult_ptr result = db.storeQuery(fmt::format("SELECT `save` FROM `players` WHERE `id` = {:d}", player->getGUID()));
 	if (!result)
 	{
@@ -742,6 +754,10 @@ bool IOLoginData::savePlayer(Player *player)
 			propWriteStream.write<uint8_t>(CONDITIONATTR_END);
 		}
 	}
+
+	std::ostringstream query2;
+	query2 << "UPDATE `players` SET `skill_points` = " << player->getSkillPoints() << " WHERE `id` = " << player->getGUID(); //@Skill system points
+	db.executeQuery(query2.str());																							 //@Skill system points
 
 	size_t conditionsSize;
 	const char *conditions = propWriteStream.getStream(conditionsSize);
@@ -830,7 +846,6 @@ bool IOLoginData::savePlayer(Player *player)
 	query << "`skill_shielding_tries` = " << player->skills[SKILL_SHIELD].tries << ',';
 	query << "`skill_fishing` = " << player->skills[SKILL_FISHING].level << ',';
 	query << "`skill_fishing_tries` = " << player->skills[SKILL_FISHING].tries << ',';
-	query << "`stat_points` = " << player->skills[STAT_POINTS].level << ','; //@skill system ???
 	query << "`direction` = " << static_cast<uint16_t>(player->getDirection()) << ',';
 
 	if (!player->isOffline())

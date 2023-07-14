@@ -108,11 +108,14 @@ class Player final : public Creature, public Cylinder
 public:
 	explicit Player(ProtocolGame_ptr p);
 
-	int32_t getStatPoints() const { return statPoints; }			 //@
-	void addStatPoints(int32_t points) { statPoints += points; }	 //@Skill points system
-	void removeStatPoints(uint32_t points) { statPoints -= points; } //@
+	// int32_t getStatPoints() const { return statPoints; }			 //@
+	// void addStatPoints(int32_t points) { statPoints += points; }	 //@Skill points system
+	// void removeStatPoints(uint32_t points) { statPoints -= points; } //@
 
 	~Player();
+
+	void setSkillPoints(int skillPoints); // @Skill points system Method to set the value of skillPoints
+	int getSkillPoints() const;			  // @Skill points system Method to get the value of skillPoints
 
 	// non-copyable
 	Player(const Player &) = delete;
@@ -752,7 +755,9 @@ public:
 	void drainMana(Creature *attacker, int32_t manaLoss);
 	void addManaSpent(uint64_t amount);
 	void removeManaSpent(uint64_t amount, bool notify = false);
-	// void addSkillAdvance(skills_t skill, uint64_t count);
+
+	// void addSkillAdvance(skills_t skill, uint64_t count); //@Skill points system
+
 	void removeSkillTries(skills_t skill, uint64_t count, bool notify = false);
 
 	int32_t getArmor() const override;
@@ -1435,9 +1440,10 @@ public:
 private:
 	std::forward_list<Condition *> getMuteConditions() const;
 
-	uint32_t statPoints = 0; //@Skill points system
-
 	void checkTradeState(const Item *item);
+
+	int skillPoints; //@Skill points system
+
 	bool hasCapacity(const Item *item, uint32_t count) const;
 
 	void gainExperience(uint64_t gainExp, Creature *source);

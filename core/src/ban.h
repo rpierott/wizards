@@ -10,6 +10,8 @@ struct BanInfo {
 	time_t expiresAt;
 };
 
+
+
 struct ConnectBlock {
 	constexpr ConnectBlock(uint64_t lastAttempt, uint64_t blockTime, uint32_t count) :
 		lastAttempt(lastAttempt), blockTime(blockTime), count(count) {}
