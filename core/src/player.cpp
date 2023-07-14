@@ -31,10 +31,9 @@ MuteCountMap Player::muteCountMap;
 
 uint32_t Player::playerAutoID = 0x10000000;
 
-Player::Player(ProtocolGame_ptr p) : Creature(), lastPing(OTSYS_TIME()), lastPong(lastPing), inbox(new Inbox(ITEM_INBOX)), storeInbox(new StoreInbox(ITEM_STORE_INBOX)), client(std::move(p))
+Player::Player(ProtocolGame_ptr p) : Creature(), lastPing(OTSYS_TIME()), lastPong(lastPing), inbox(new Inbox(ITEM_INBOX)), storeInbox(new StoreInbox(ITEM_STORE_INBOX)), client(std::move(p)), statPoints(0) //@Skill points system
 {
 	inbox->incrementReferenceCounter();
-
 	storeInbox->setParent(this);
 	storeInbox->incrementReferenceCounter();
 }
@@ -521,7 +520,7 @@ void Player::updateInventoryWeight()
 	}
 }
 
-// void Player::addSkillAdvance(skills_t skill, uint64_t count)
+// void Player::addSkillAdvance(skills_t skill, uint64_t count) @Skill points system
 // {
 // uint64_t currReqTries = vocation->getReqSkillTries(skill, skills[skill].level);
 // uint64_t nextReqTries = vocation->getReqSkillTries(skill, skills[skill].level + 1);
@@ -2192,7 +2191,7 @@ void Player::onBlockHit()
 		--shieldBlockCount;
 
 		// if (hasShield()) {
-		// 	addSkillAdvance(SKILL_SHIELD, 1);
+		// 	addSkillAdvance(SKILL_SHIELD, 1); @skill points system
 		// }
 	}
 }
@@ -4385,6 +4384,11 @@ void Player::onGainExperience(uint64_t gainExp, Creature *target)
 	{
 		return;
 	}
+
+	if (newLevel > oldLevel)
+	{
+		addStatPoints(newLevel - oldLevel);
+	} //@Skill poits system
 
 	if (target && !target->getPlayer() && party && party->isSharedExperienceActive() && party->isSharedExperienceEnabled())
 	{

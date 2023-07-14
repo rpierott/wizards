@@ -452,6 +452,8 @@ class LuaScriptInterface
 		void registerGlobalVariable(const std::string& name, lua_Number value);
 		void registerGlobalBoolean(const std::string& name, bool value);
 
+		static int luaPlayerAddSkill(lua_State *L); //@Skill points system
+
 		static std::string getStackTrace(lua_State* L, const std::string& error_desc);
 
 		static bool getArea(lua_State* L, std::vector<uint32_t>& vec, uint32_t& rows);

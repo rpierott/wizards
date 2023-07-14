@@ -107,6 +107,11 @@ class Player final : public Creature, public Cylinder
 {
 public:
 	explicit Player(ProtocolGame_ptr p);
+
+	int32_t getStatPoints() const { return statPoints; }			 //@
+	void addStatPoints(int32_t points) { statPoints += points; }	 //@Skill points system
+	void removeStatPoints(uint32_t points) { statPoints -= points; } //@
+
 	~Player();
 
 	// non-copyable
@@ -1429,6 +1434,8 @@ public:
 
 private:
 	std::forward_list<Condition *> getMuteConditions() const;
+
+	uint32_t statPoints = 0; //@Skill points system
 
 	void checkTradeState(const Item *item);
 	bool hasCapacity(const Item *item, uint32_t count) const;
