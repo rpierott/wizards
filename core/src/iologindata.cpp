@@ -310,9 +310,7 @@ bool IOLoginData::loadPlayer(Player *player, DBResult_ptr result)
 
 	std::ostringstream query3;															 //@Skill system points
 	query3 << "SELECT `skill_points` FROM `players` WHERE `id` = " << player->getGUID(); //@Skill system points
-	std::cout << query3.str() << "Aui";
-	std::cout << query3.str();
-	DBResult_ptr result3 = db.storeQuery(query3.str()); //@Skill system points
+	DBResult_ptr result3 = db.storeQuery(query3.str());									 //@Skill system points
 	if (result3)
 	{
 		player->setSkillPoints(result3->getNumber<int32_t>("skill_points"));

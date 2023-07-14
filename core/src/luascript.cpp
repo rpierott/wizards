@@ -450,7 +450,7 @@ int32_t LuaScriptInterface::getMetaEvent(const std::string &globalName, const st
 	lua_rawseti(luaState, -4, runningEventId);
 	lua_pop(luaState, 1);
 
-	// reset global value of this event
+	// reset global value of this event a
 	lua_pushnil(luaState);
 	lua_setfield(luaState, -2, eventName.c_str());
 	lua_pop(luaState, 2);

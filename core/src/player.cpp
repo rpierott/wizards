@@ -1089,7 +1089,6 @@ void Player::setWriteItem(Item *item, uint16_t maxWriteLen /*= 0*/)
 void Player::setSkillPoints(int skillPoints)
 {
 	this->skillPoints = skillPoints; // 'this' is a pointer to the current instance of the Player class
-									 // std::cout << skillPoints;
 } //@Skill points system
 
 int Player::getSkillPoints() const
