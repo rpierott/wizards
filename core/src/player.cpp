@@ -1111,7 +1111,7 @@ void Player::refreshSkills()
 	for (uint8_t i = SKILL_FIRST; i <= SKILL_LAST; i++)
 	{
 		sendSkills();
-		// sendStats(); //trying this so the status will be update as well
+		sendStats(); // trying this so the status will be update as well
 	}
 } //@Skill points system - Method used to refresh the client after the skill is increased by the skill points system
 
@@ -2439,7 +2439,7 @@ void Player::death(Creature *lastHitCreature)
 			}
 		}
 
-		// Magic level loss
+		// Magic level loss @Here could be a good place to take the skill lose from happening whe dying
 		uint64_t sumMana = 0;
 		for (uint32_t i = 1; i <= magLevel; ++i)
 		{
@@ -2450,18 +2450,18 @@ void Player::death(Creature *lastHitCreature)
 		removeManaSpent(static_cast<uint64_t>((sumMana + manaSpent) * deathLossPercent), false);
 
 		// Skill loss
-		for (uint8_t i = SKILL_FIRST; i <= SKILL_LAST; ++i)
-		{ // for each skill
-			uint64_t sumSkillTries = 0;
-			for (uint16_t c = MINIMUM_SKILL_LEVEL + 1; c <= skills[i].level; ++c)
-			{ // sum up all required tries for all skill levels
-				sumSkillTries += vocation->getReqSkillTries(i, c);
-			}
+		// for (uint8_t i = SKILL_FIRST; i <= SKILL_LAST; ++i)
+		// { // for each skill
+		// 	uint64_t sumSkillTries = 0;
+		// 	for (uint16_t c = MINIMUM_SKILL_LEVEL + 1; c <= skills[i].level; ++c)
+		// 	{ // sum up all required tries for all skill levels
+		// 		sumSkillTries += vocation->getReqSkillTries(i, c);
+		// 	}
 
-			sumSkillTries += skills[i].tries;
+		// 	sumSkillTries += skills[i].tries;
 
-			removeSkillTries(static_cast<skills_t>(i), sumSkillTries * deathLossPercent, false);
-		}
+		// 	removeSkillTries(static_cast<skills_t>(i), sumSkillTries * deathLossPercent, false);
+		// } //@Skill points system - Taking this part out will let the skill lose when dying not to happen
 
 		// Level loss
 		uint64_t expLoss = static_cast<uint64_t>(experience * deathLossPercent);

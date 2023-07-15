@@ -16,7 +16,6 @@
 vcpkg_installed/*
 vc17/*
 
-
 # Build results
 
 [Dd]ebug/
