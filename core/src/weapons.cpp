@@ -351,7 +351,7 @@ bool Weapon::useFist(Player* player, Creature* target)
 
 	Combat::doTargetCombat(player, target, damage, params);
 	if (!player->hasFlag(PlayerFlag_NotGainSkill) && player->getAddAttackSkill()) {
-		//player->addSkillAdvance(SKILL_FIST, 1); @Skill points system
+		player->addSkillAdvance(SKILL_FIST, 1);
 	}
 
 	return true;
@@ -402,9 +402,9 @@ void Weapon::onUsedWeapon(Player* player, Item* item, Tile* destTile) const
 	if (!player->hasFlag(PlayerFlag_NotGainSkill)) {
 		skills_t skillType;
 		uint32_t skillPoint;
-		//if (getSkillType(player, item, skillType, skillPoint)) {
-			//player->addSkillAdvance(skillType, skillPoint);
-		//}  @Skill system points
+		if (getSkillType(player, item, skillType, skillPoint)) {
+			player->addSkillAdvance(skillType, skillPoint);
+		}
 	}
 
 	uint32_t manaCost = getManaCost(player);
