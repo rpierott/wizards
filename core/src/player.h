@@ -108,14 +108,21 @@ class Player final : public Creature, public Cylinder
 public:
 	explicit Player(ProtocolGame_ptr p);
 
-	// int32_t getStatPoints() const { return statPoints; }			 //@
+	// int32_t getStatPoints() const { return statPoints; }			 //@Skill points system
 	// void addStatPoints(int32_t points) { statPoints += points; }	 //@Skill points system
-	// void removeStatPoints(uint32_t points) { statPoints -= points; } //@
+	// void removeStatPoints(uint32_t points) { statPoints -= points; } //@Skill points system
 
 	~Player();
 
-	void setSkillPoints(int skillPoints); // @Skill points system Method to set the value of skillPoints
-	int getSkillPoints() const;			  // @Skill points system Method to get the value of skillPoints
+	void setSkillPoints(int skillPoints); // @Skill points system - Register the method to set the value of skillPoints
+	int getSkillPoints() const;			  // @Skill points system - Register the method to get the value of skillPoints
+
+	void setHighestLevelReached(int highestLevelReached); //@Skill points system - Register the method to set the highest level the player ever reached
+	int getHighestLevelReached() const;					  //@Skill points system - Register the method to get the highest level the player ever reached
+
+	void setSkillLevel(uint8_t skill, uint16_t level); //@Skill points system - Register the method to set a particular skill to level up by the skill system, that takes two arguments: the id of the skill to modify (as a byte uint8_t), and the new level of the skill (as a short integer uint16_t).
+
+	void refreshSkills(); //@Skill points system - Method used to refresh the client after the skill is increased by the skill points system
 
 	// non-copyable
 	Player(const Player &) = delete;
@@ -1442,7 +1449,8 @@ private:
 
 	void checkTradeState(const Item *item);
 
-	int skillPoints; //@Skill points system
+	int skillPoints;		 //@Skill points system
+	int highestLevelReached; // @Skill points system - New attribute for highest level reached
 
 	bool hasCapacity(const Item *item, uint32_t count) const;
 

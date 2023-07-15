@@ -316,6 +316,14 @@ bool IOLoginData::loadPlayer(Player *player, DBResult_ptr result)
 		player->setSkillPoints(result3->getNumber<int32_t>("skill_points"));
 	} //@Skill system points
 
+	query3.str(std::string());																	  //@Skill system points - clear the query
+	query3 << "SELECT `highest_level_reached` FROM `players` WHERE `id` = " << player->getGUID(); //@Skill system points
+	result3 = db.storeQuery(query3.str());														  //@Skill system points
+	if (result3)
+	{
+		player->setHighestLevelReached(result3->getNumber<int32_t>("highest_level_reached"));
+	} //@Skill system points
+
 	player->soul = result->getNumber<uint16_t>("soul");
 	player->capacity = result->getNumber<uint32_t>("cap") * 100;
 	player->blessings = result->getNumber<uint16_t>("blessings");
@@ -753,9 +761,13 @@ bool IOLoginData::savePlayer(Player *player)
 		}
 	}
 
-	std::ostringstream query2;
+	std::ostringstream query2;																								 //@Skill system points
 	query2 << "UPDATE `players` SET `skill_points` = " << player->getSkillPoints() << " WHERE `id` = " << player->getGUID(); //@Skill system points
 	db.executeQuery(query2.str());																							 //@Skill system points
+
+	query2.str(std::string());																												  //@Skill system points - clear the query																											  //@Skill system points
+	query2 << "UPDATE `players` SET `highest_level_reached` = " << player->getHighestLevelReached() << " WHERE `id` = " << player->getGUID(); //@Skill system points
+	db.executeQuery(query2.str());																											  //@Skill system points
 
 	size_t conditionsSize;
 	const char *conditions = propWriteStream.getStream(conditionsSize);

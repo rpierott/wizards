@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <talkactions>
+	<!-- custom talkactions -->
+	<talkaction words="!skill" separator=" " script="skill_point.lua" />
+
 	<!-- commands -->
 	<talkaction words="/attr" separator=" " script="attributes.lua" />
 	<talkaction words="/ban" separator=" " script="ban.lua" />

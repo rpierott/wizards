@@ -1089,12 +1089,44 @@ void Player::setWriteItem(Item *item, uint16_t maxWriteLen /*= 0*/)
 void Player::setSkillPoints(int skillPoints)
 {
 	this->skillPoints = skillPoints; // 'this' is a pointer to the current instance of the Player class
-} //@Skill points system
+} //@Skill points system - New method implemented to set the new skill points amount
 
 int Player::getSkillPoints() const
 {
 	return this->skillPoints;
-} //@Skill points system
+} //@Skill points system - New method implemented to return the available skill points
+
+void Player::setHighestLevelReached(int highestLevelReached)
+{
+	this->highestLevelReached = highestLevelReached;
+} //@Skill points system - New method implemented to set the new skill points amount
+
+int Player::getHighestLevelReached() const
+{
+	return this->highestLevelReached;
+} //@Skill points system - New method implemented to return the available skill points
+
+void Player::refreshSkills()
+{
+	for (uint8_t i = SKILL_FIRST; i <= SKILL_LAST; i++)
+	{
+		sendSkills();
+		// sendStats(); //trying this so the status will be update as well
+	}
+} //@Skill points system - Method used to refresh the client after the skill is increased by the skill points system
+
+void Player::setSkillLevel(uint8_t skill, uint16_t newLevel)
+{
+	if (skill < SKILL_FIRST || skill > SKILL_LAST)
+	{
+		return;
+	}
+
+	skills[skill].level = newLevel;
+	skills[skill].tries = 0;
+
+	refreshSkills();
+}
 
 House *Player::getEditHouse(uint32_t &windowTextId, uint32_t &listId)
 {
@@ -2038,7 +2070,18 @@ void Player::addExperience(Creature *source, uint64_t exp, bool sendText /* = fa
 		++level;
 
 		// sendTextMessage(MESSAGE_EVENT_ADVANCE, fmt::format("You bilu ")); //@msgm
-		setSkillPoints(getSkillPoints() + 1); //@Skill point system
+		// setSkillPoints(getSkillPoints() + 1); //@Skill point system
+		// const Player *player = source->getPlayer();
+
+		// if (player && level > player->getHighestLevelReached())
+
+		// Check if new level is higher than highest level reached
+		if (level > getHighestLevelReached())
+		{
+			// Update highest level reached and increase 1 skill point
+			setHighestLevelReached(level);
+			setSkillPoints(getSkillPoints() + 1);
+		} //@Skill points system
 
 		healthMax += vocation->getHPGain();
 		health += vocation->getHPGain();

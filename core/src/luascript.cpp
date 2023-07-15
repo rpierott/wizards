@@ -1118,10 +1118,7 @@ void LuaScriptInterface::registerFunctions()
 	// doPlayerAddItem(cid, itemid, <optional: default: 1> count, <optional: default: 1> canDropOnMap, <optional: default: 1>subtype)
 
 	// Returns uid of the created item
-	lua_register(luaState, "doPlayerAddItem", LuaScriptInterface::luaDoPlayerAddItem);
-
-	lua_register(luaState, "Player.getSkillPoints", LuaScriptInterface::luaPlayerGetSkillPoints); //@Skill points system
-	lua_register(luaState, "Player.addSkillPoints", LuaScriptInterface::luaPlayerAddSkillPoints); //@Skill points system
+	lua_register(luaState, "doPlayerAddItem", LuaScriptInterface::luaDoPlayerAddItem); //@Decripted method
 
 	// isValidUID(uid)
 	lua_register(luaState, "isValidUID", LuaScriptInterface::luaIsValidUID);
@@ -2476,6 +2473,12 @@ void LuaScriptInterface::registerFunctions()
 
 	registerMethod("Player", "isPlayer", LuaScriptInterface::luaPlayerIsPlayer);
 
+	// my methods registrations
+	registerMethod("Player", "getSkillPoints", LuaScriptInterface::luaPlayerGetSkillPoints); //@Skill points system (registerMethod is the new way to register in tfs 1.4.2+)
+	registerMethod("Player", "addSkillPoints", LuaScriptInterface::luaPlayerAddSkillPoints); //@Skill points system
+	registerMethod("Player", "setSkillLevel", LuaScriptInterface::luaPlayerSetSkillLevel);	 //@Skill points system
+	registerMethod("Player", "refreshSkills", LuaScriptInterface::luaPlayerRefreshSkills);	 //@Skill points system
+
 	registerMethod("Player", "getGuid", LuaScriptInterface::luaPlayerGetGuid);
 	registerMethod("Player", "getIp", LuaScriptInterface::luaPlayerGetIp);
 	registerMethod("Player", "getAccountId", LuaScriptInterface::luaPlayerGetAccountId);
@@ -3719,14 +3722,13 @@ int LuaScriptInterface::luaPlayerGetSkillPoints(lua_State *L)
 	{
 		// push the player's skill points onto the stack
 		lua_pushnumber(L, player->getSkillPoints());
-		// tell Lua that we're returning 1 value
-		return 1;
 	}
 	else
 	{
 		lua_pushnil(L);
-		return 1;
 	}
+	// tell Lua that we're returning 1 value
+	return 1;
 } //@Skill points system
 
 int LuaScriptInterface::luaPlayerAddSkillPoints(lua_State *L)
@@ -3738,6 +3740,32 @@ int LuaScriptInterface::luaPlayerAddSkillPoints(lua_State *L)
 	{
 		// add the skill points to the player
 		player->setSkillPoints(player->getSkillPoints() + points);
+	}
+	// tell Lua we're not returning any values
+	return 0;
+} //@Skill points system
+
+int LuaScriptInterface::luaPlayerSetSkillLevel(lua_State *L)
+{
+	// get player object
+	Player *player = getUserdata<Player>(L, 1);
+	uint8_t skill = getNumber<uint8_t>(L, 2);
+	uint16_t level = getNumber<uint16_t>(L, 3);
+	if (player)
+	{
+		player->setSkillLevel(skill, level);
+	}
+	// tell Lua we're not returning any values
+	return 0;
+} //@Skill points system
+
+int LuaScriptInterface::luaPlayerRefreshSkills(lua_State *L)
+{
+	// get player object
+	Player *player = getUserdata<Player>(L, 1);
+	if (player)
+	{
+		player->refreshSkills();
 	}
 	// tell Lua we're not returning any values
 	return 0;
