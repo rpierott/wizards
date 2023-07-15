@@ -15,6 +15,7 @@
 
 vcpkg_installed/*
 vc17/*
+data/*
 
 # Build results
 
