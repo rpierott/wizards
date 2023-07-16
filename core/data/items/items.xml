@@ -3301,8 +3301,8 @@
 		<attribute key="attack" value="24" />
 		<attribute key="elementFire" value="11" />
 		<attribute key="weaponType" value="sword" />
-		<attribute key="extradef" value="1" />
-		<!-- <attribute key="storeitem" value="1" /> -->
+		<attribute key="extradef" value="1" />		
+		<attribute key="soulbound" value="1" />
 	</item>
 	<item id="2393" article="a" name="giant sword">
 		<attribute key="description" value="This sword has been forged by ancient giants." />
