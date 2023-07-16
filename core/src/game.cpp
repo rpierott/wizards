@@ -1292,15 +1292,6 @@ ReturnValue Game::internalMoveItem(Cylinder *fromCylinder, Cylinder *toCylinder,
 
 	Item *toItem = nullptr;
 
-	// if (item->hasAttribute(ITEM_ATTRIBUTE_SOULBOUND))
-	// {
-	// 	Player *toPlayer = toCylinder->getTile()->getTopCreature()->getPlayer();
-	// 	if (!toPlayer || (toCylinder != toPlayer && toPlayer != actor))
-	// 	{
-	// 		return RETURNVALUE_NOTPOSSIBLE;
-	// 	}
-	// } //@Soulbound system
-
 	Cylinder *subCylinder;
 	int floorN = 0;
 
@@ -3160,7 +3151,6 @@ void Game::playerRequestTrade(uint32_t playerId, const Position &pos, uint8_t st
 	if (tradeItem->getClientID() != spriteId || !tradeItem->isPickupable() || tradeItem->hasAttribute(ITEM_ATTRIBUTE_UNIQUEID)) // || tradeItem->isSoulbound()) //@Soulbound system - tradeItem->hasAttribute(ITEM_ATTRIBUTE_SOULBOUND)
 	{
 		player->sendCancelMessage(RETURNVALUE_NOTPOSSIBLE);
-		// player->sendCancelMessage("Bila");
 		return;
 	}
 
@@ -3537,7 +3527,7 @@ void Game::playerLookInTrade(uint32_t playerId, bool lookAtCounterOffer, uint8_t
 			if (item->isSoulbound())
 			{
 				return;
-			} //@Soulbound system
+			} // vvSoulbound system
 
 			Container *tmpContainer = item->getContainer();
 			if (tmpContainer)
