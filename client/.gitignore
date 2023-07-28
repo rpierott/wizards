@@ -12,7 +12,7 @@
 .idea/
 .vscode/
 vcpkg_installed/*
-vc17/*
+
 
 
 # Build results
